@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Text, StyleSheet, FlatList, ActivityIndicator, TouchableWithoutFeedback } from 'react-native';
+import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import Drank from './components/drank';
 import DrankDetails from './components/drankDetails';
 import ShoppingBasket from './components/shoppingBasket';
@@ -47,68 +49,82 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      {screen === 'list' ? (
-        isLoading ? <ActivityIndicator/> : (
-          <>
-            <Text style={styles.title}>Welcome!</Text>
-            <TouchableWithoutFeedback onPressIn={() => setScreen('shoppingcart')}>
-              <View>
-                <Text style={styles.shoppingbasket}>Shoppingbasket</Text>
+    <>
+      {screen === 'list' && (
+        <View style={styles.header}>
+          <Text style={styles.title}>Welcome!</Text>
+          <TouchableWithoutFeedback onPressIn={() => setScreen('shoppingcart')}>
+             <View style={styles.shoppingbasket}>
+                <FontAwesomeIcon icon={faShoppingCart} size={30} color={"#FFACC7"} />
               </View>
-            </TouchableWithoutFeedback>
-            
-            <TextInput
-              style={styles.input}
-              placeholder="Zoek drankjes..."
-              onChangeText={text => setSearch(text)}
-            />
-            <FlatList
-              data={handleFilter(data, search)}
-              keyExtractor={({ id }, index) => id.toString()}
-              renderItem={({ item }) => (
-                <>
-                  <Drank setScreen={setScreen} title={item.title.rendered} image={handleGetImage(item.content.rendered)} />
-                  { !shoppingBasket.find((shoppingBasketItem) => shoppingBasketItem.id === item.id) && <Text style={styles.drank_beschrijving} onPress={() => handleAddToBasket(item)}>Add to Basket</Text> }
-                </>
-              )}
-            />
-          </>
-        )
-      ) : screen === 'shoppingcart' ? (
-        <ShoppingBasket onPressIn={() => handleOnClick(item)} handleRemoveToBasket={handleRemoveToBasket} setScreen={setScreen} shoppingBasket={shoppingBasket} />
-      ) : (
-        <DrankDetails setScreen={setScreen} title={screen.title.rendered} image={handleGetImage(screen.content.rendered)} description={screen.content.rendered} />
+          </TouchableWithoutFeedback>
+          
+          <TextInput
+            style={styles.input}
+            placeholder="Searching for a drink?"
+            placeholderTextColor="#fff"
+            onChangeText={text => setSearch(text)}
+          />
+        </View>
       )}
-    </View >
+      <View style={styles.container}>
+        {screen === 'list' ? (
+          isLoading ? <ActivityIndicator/> : (
+            <>
+              <FlatList
+                data={handleFilter(data, search)}
+                keyExtractor={({ id }, index) => id.toString()}
+                renderItem={({ item }) => (
+                  <>
+                    <Drank setScreen={() => setScreen(item)} title={item.title.rendered} image={handleGetImage(item.content.rendered)} />
+                    { !shoppingBasket.find((shoppingBasketItem) => shoppingBasketItem.id === item.id) && <Text style={styles.drank_basket} onPress={() => handleAddToBasket(item)}>Add to Basket</Text> }
+                  </>
+                )}
+              />
+            </>
+          )
+        ) : screen === 'shoppingcart' ? (
+          <ShoppingBasket onPressIn={() => handleOnClick(item)} handleRemoveToBasket={handleRemoveToBasket} setScreen={setScreen} shoppingBasket={shoppingBasket} />
+        ) : (
+          <DrankDetails setScreen={setScreen} title={screen.title.rendered} image={handleGetImage(screen.content.rendered)} description={screen.excerpt.rendered} />
+        )}
+      </View >
+    </>
   );
-};
+  };
 
-// Create stylesheet 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
     backgroundColor: '#fff',
+  },
+  header: {
+    backgroundColor: 'black',
   },
   title: {
     textAlign: 'center',
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#EA047E',
+    color: '#FF8DC7',
     marginTop: 50,
   },
   shoppingbasket: {
-    textAlign: 'right',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FF6D28',
-  },
-  header: {
-    marginTop: 80,
-    marginLeft: 20,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginRight: 20,
   },
   input: {
     marginBottom: 30,
+    color: 'white',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  drank_basket: {
+    textAlign: 'right',
+    marginRight: 70,
+    marginTop: 15,
+    marginBottom: 45,
+    color: '#C3AED6',
+    textDecorationLine: 'underline',
   },
 });
