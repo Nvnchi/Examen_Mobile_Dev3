@@ -1,13 +1,14 @@
 import React from 'react';
-import { Text, View, StyleSheet, Image } from 'react-native';
+import { Text, View, StyleSheet, Image, TouchableWithoutFeedback } from 'react-native';
 
 const Drank = (props) => {
   return (
-    <View>
-      <Text style={styles.drank_naam}>{props.title}</Text>
-      <Text style={styles.drank_beschrijving}>{props.description}</Text>
-      <Image source={{uri: props.image}} style={{width: 200, height: 200}} />
-    </View>
+    <TouchableWithoutFeedback onPress={props.setScreen}>
+      <View>
+        <Text style={styles.drank_naam}>{props.title}</Text>
+        <Image source={{uri: props.image}} style={{width: 200, height: 200}} />
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
